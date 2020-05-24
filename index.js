@@ -4,26 +4,6 @@ const axios = require('axios')
 const api_key = 'bfaef0d743a79a41faf334cab37e4b67'
 
 
-// Get a list of in season sports
-// axios.get('https://api.the-odds-api.com/v3/sports', {
-//     params: {
-//         api_key: api_key
-//     }
-// }).then(response => {
-
-//     console.log(
-//         `Successfully got ${response.data.data.length} sports.`,
-//         `Here's the first sport:`
-//     )
-
-//     console.log(response.data.data)
-// })
-// .catch(error => {
-//     console.log('Error status', error.response.status)
-//     console.log(error.response.data)
-// })
-
-
 // To get odds for a sepcific sport, use the sport key from the list below
 //   or set sport to "sport_key" to see live and upcoming across all sports
 const superligaArgentina = "soccer_argentina_primera_division"
