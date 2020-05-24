@@ -120,7 +120,7 @@ axios.get('https://api.the-odds-api.com/v3/odds', {
         throw new Error("No H2H available, not running Totals")
     } else {
         console.log("Done H2H")
-        runTotals
+        runTotals()
     }
 })
 
