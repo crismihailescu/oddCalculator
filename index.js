@@ -97,23 +97,23 @@ axios.get('https://api.the-odds-api.com/v3/odds', {
         game = obj[i].teams
         betSites = obj[i].sites
         if (soccerTeams.includes(obj[i].sport_key)){
-            console.log("There are upcoming soccer games")
+            //console.log("There are upcoming soccer games")
             for (j in betSites) {
-                console.log("Checking all betting sites")
+                //console.log("Checking all betting sites")
                 if (betSites[j].site_nice == "Pinnacle") {
-                    console.log("Found Pinnacle")
+                    //console.log("Found Pinnacle")
                     if (betSites[j].odds.h2h[2]>=minTieOdds && betSites[j].odds.h2h[2]<=maxTieOdds 
                         && Math.abs(betSites[j].odds.h2h[0]-betSites[j].odds.h2h[1])<maxDifferenceOdds) {
-                            console.log(game+" is worth betting on!")
+                            //console.log(game+" is worth betting on!")
                             goodBetTeams.push(game)
                         } else {
-                            console.log(game+" is NOT worth betting on.")
+                            //console.log(game+" is NOT worth betting on.")
                         }
                         break
                 } 
             }
         }
-        console.log("There are no upcoming soccer games")
+        //console.log("There are no upcoming soccer games")
     }
     console.log("Teams worth betting on for H2H are: "+goodBetTeams)
     if (goodBetTeams.length<=0){
@@ -139,7 +139,7 @@ function runTotals(){
     })
     .then(response => {
         // Print the number of events recieved (Number of games)
-        console.log(`Successfully got ${response.data.data.length} events`)
+        //console.log(`Successfully got ${response.data.data.length} events`)
 
         // To print the JSON text in its entirety (Not needed)
         //console.log(JSON.stringify(response.data.data))
@@ -151,8 +151,8 @@ function runTotals(){
         //console.log(obj)
 
         // Check remaining usage 
-        console.log('Remaining requests',response.headers['x-requests-remaining'])
-        console.log('Used requests',response.headers['x-requests-used'])
+        //console.log('Remaining requests',response.headers['x-requests-remaining'])
+        //console.log('Used requests',response.headers['x-requests-used'])
     })
     .catch(error => {
         console.log('Error status', error.response.status)
@@ -171,27 +171,31 @@ function runTotals(){
             totalGame = obj[i].teams
             betSites = obj[i].sites
             if (soccerTeams.includes(obj[i].sport_key)){
-                console.log("There are upcoming soccer games")
+                //console.log("There are upcoming soccer games")
                 for (j in betSites) {
-                    console.log("Checking all betting sites")
+                    //console.log("Checking all betting sites")
                     if (betSites[j].site_nice == "Pinnacle") {
-                        console.log("Found Pinnacle")
+                        //console.log("Found Pinnacle")
                         if (betSites[j].odds.totals.points[1]==2.5 && betSites[j].odds.totals.position[1]=="under" 
                         && betSites[j].odds.totals.odds[1]<=maxTotalOdds) {
                             if (goodBetTeams.includes(totalGame)){
-                                console.log("This game is worth betting on: "+totalGame)
+                                //console.log("This game is worth betting on: "+totalGame)
                                 finalBetTeams.push(totalGame)
                             } else {
-                                console.log("This ("+totalGame+") team is NOT worth betting on")
+                                //console.log("This ("+totalGame+") team is NOT worth betting on")
                             }
                         }
                         break
                     } 
                 }
             }
-            console.log("There are no upcoming soccer games")
+            //console.log("There are no upcoming soccer games")
         }
-        console.log("Teams worth betting on (H2H & Totals) are: "+finalBetTeams)
+        if (finalBetTeams>0){
+            console.log("Teams worth betting on (H2H & Totals) are: "+finalBetTeams)
+        } else {
+            console.log("No games worth betting on...")
+        }
         console.log("Done everything")
     })
 }
