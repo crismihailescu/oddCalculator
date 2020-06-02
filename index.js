@@ -48,7 +48,7 @@ let soccerTeams = [superligaArgentina, australiaA_League, belgiumFirstDevision, 
 let upcoming = "upcoming"
 
 // Key for API (Variable)
-let sport_key = portugeseSoccer
+let sport_key = upcoming
 
 const maxTotalOdds = 1.7
 const maxDifferenceOdds = 1
@@ -88,27 +88,39 @@ axios.get('https://api.the-odds-api.com/v3/odds', {
     console.log("Started H2H Calculation")
 
     // Test function
-    console.log(obj[0].sites[5]) 
+    // console.log(obj[1].sites[0]) 
+    // console.log(obj[1].sites[1]) 
+    // console.log(obj[1].sites[2]) 
+    // console.log(obj[1].sites[3]) 
+    // console.log(obj[1].sites[4]) 
+    // console.log(obj[1].sites[5]) 
 
     // Apply formula to get only games that follow criteria 
     let games
     let avgTie = 0
     let avgDifference = 0
     let pinnacleExist = false
+    let betSiteMinusTie = 0
+    let betSiteMinusDiff = 0
 
     for (let i=0; i<obj.length; i++) {
         game = obj[i].teams
         betSites = obj[i].sites
+        betSiteMinusDiff = 0
+        betSiteMinusTie = 0
+        avgTie = 0
+        avgDifference = 0
+        pinnacleExist = false
         if (soccerTeams.includes(obj[i].sport_key)){
             //console.log("There are upcoming soccer games")
             for (j in betSites) {
                 //console.log("Checking all betting sites")
                 if (betSites[j].site_nice == "Pinnacle") {
-                    //console.log("Found Pinnacle")
+                    console.log("Found Pinnacle odds for "+game+" with Difference: "+Math.abs(betSites[j].odds.h2h[0]-betSites[j].odds.h2h[1])+". Diff: "+betSites[j].odds.h2h[2])
                     pinnacleExist = true
                     if (betSites[j].odds.h2h[2]>=minTieOdds && betSites[j].odds.h2h[2]<=maxTieOdds 
                         && Math.abs(betSites[j].odds.h2h[0]-betSites[j].odds.h2h[1])<maxDifferenceOdds) {
-                            console.log("Found Pinnacle odds for \""+game+"\". Difference: "+Math.abs(betSites[j].odds.h2h[0]-betSites[j].odds.h2h[1])+". Tie: "+betSites[j].odds.h2h[2])
+                            //console.log("Added Pinnacle odds for \""+game+"\". Difference: "+Math.abs(betSites[j].odds.h2h[0]-betSites[j].odds.h2h[1])+". Tie: "+betSites[j].odds.h2h[2])
                             goodBetTeams.push(game)
                         } else {
                             //console.log(game+" is NOT worth betting on.")
@@ -119,23 +131,32 @@ axios.get('https://api.the-odds-api.com/v3/odds', {
                     // Average out all the other odds
                     if (isNaN(betSites[j].odds.h2h[2])) {
                         avgTie += 0
+                        betSiteMinusTie++
                     } else {
+                        //console.log("Before tie: "+avgTie)
                         avgTie += betSites[j].odds.h2h[2]
+                        //console.log("After tie: "+avgTie)
                     }
                     if (isNaN(Math.abs(betSites[j].odds.h2h[0]-betSites[j].odds.h2h[1]))) {
                         avgDifference += 0
+                        betSiteMinusDiff++
                     } else {
+                        //console.log("Before diff: "+avgDifference)
                         avgDifference += Math.abs(betSites[j].odds.h2h[0]-betSites[j].odds.h2h[1])
+                        //console.log("After diff: "+avgDifference)
                     }
                 } 
             }
             if (!pinnacleExist) {
-                avgDifference = avgDifference/(obj[i].sites_count-1)
-                avgTie = avgTie/(obj[i].sites_count-1)
+                //console.log("Final Tie: "+avgTie+" Diff: "+avgDifference)
+                avgDifference = avgDifference/(obj[i].sites_count-betSiteMinusDiff)
+                avgTie = avgTie/(obj[i].sites_count-betSiteMinusTie)
+                //console.log("Site count: "+obj[i].sites_count)
                 console.log("Found other site averages for \""+game+"\". Difference: "+avgDifference+". Tie: "+avgTie+".")
+                //console.log("Number of tie sites subtracted: "+betSiteMinusTie+". Difference sites subtracted: "+betSiteMinusDiff)
                 if (avgDifference<maxDifferenceOdds && avgTie>=minTieOdds && avgTie<=maxTieOdds){
                     goodBetTeams.push(game)
-                    console.log("Added other site game "+game)
+                    //console.log("Added other site game "+game)
                 }
             }
         }
@@ -187,20 +208,32 @@ function runTotals(){
     .finally(function print() {
         console.log("Started Totals Calculation")
         // Test function
-        //console.log(obj[1].sites[1].odds.totals.points) 
+        //console.log(obj[2].sites[0].odds.totals) 
+        // console.log(obj[2].sites[1].odds.totals.points) 
+        // console.log(obj[2].sites[2].odds.totals.points) 
+        // console.log(obj[2].sites[3].odds.totals.points) 
+        // console.log(obj[2].sites[4].odds.totals.points) 
 
         // Apply formula to get only games that follow criteria 
         let totalGame
         let finalBetTeams = []
 
+        let avgTotalOdds = 0
+        let betSiteMinus = 0
+        let pinnacleExistTotals = false
+
         for (let i=0; i<obj.length; i++) {
             totalGame = obj[i].teams
             betSites = obj[i].sites
+            betSiteMinus = 0
+            avgTotalOdds = 0
+            pinnacleExistTotals = false
             if (soccerTeams.includes(obj[i].sport_key)){
                 //console.log("There are upcoming soccer games")
                 for (j in betSites) {
                     //console.log("Checking all betting sites")
                     if (betSites[j].site_nice == "Pinnacle") {
+                        pinnacleExistTotals = true
                         //console.log("Found Pinnacle")
                         if (betSites[j].odds.totals.points[1]==2.5 && betSites[j].odds.totals.position[1]=="under" 
                         && betSites[j].odds.totals.odds[1]<=maxTotalOdds) {
@@ -212,12 +245,39 @@ function runTotals(){
                             }
                         }
                         break
+                    } else {
+                        //console.log("No Pinnacle")
+                        // Average out all the other odds
+                        if (isNaN(betSites[j].odds.totals.odds[1]) || betSites[j].odds.totals.points[1]!=2.5 || betSites[j].odds.totals.position[1]!="under" ) {
+                            avgTotalOdds += 0
+                            betSiteMinus++
+                        } else {
+                            avgTotalOdds += betSites[j].odds.totals.odds[1]
+                        }
                     } 
+                }
+                if (!pinnacleExistTotals) {
+                    avgTotalOdds = avgTotalOdds/(obj[i].sites_count-betSiteMinus)
+                    console.log("Found other site averages for \""+totalGame+"\". Total Odds: "+avgTotalOdds+".")
+                    if (avgTotalOdds<=maxTotalOdds){
+                        for (m in goodBetTeams){
+                            // console.log(goodBetTeams[m][0])
+                            // console.log(totalGame[0])
+                            // console.log(goodBetTeams[m][1])
+                            // console.log(totalGame[1])
+                            if (goodBetTeams[m][0] == totalGame[0] && goodBetTeams[m][1] == totalGame[1]) {
+                                finalBetTeams.push(totalGame)
+                                //console.log("Added other site game "+totalGame)
+                            } else {
+                                //console.log(totalGame+" was not added")
+                            }
+                        }
+                    }
                 }
             }
             //console.log("There are no upcoming soccer games")
         }
-        if (finalBetTeams>0){
+        if (finalBetTeams.length>0){
             console.log("Teams worth betting on (H2H & Totals) are: "+finalBetTeams)
         } else {
             console.log("No games worth betting on...")
