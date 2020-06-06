@@ -47,8 +47,31 @@ let soccerTeams = [superligaArgentina, australiaA_League, belgiumFirstDevision, 
 // Find all games happening tomorrow
 let upcoming = "upcoming"
 
-// Key for API (Variable)
+// DO NOT EDIT ABOVE THIS LINE
+//
+//
+//
+//
+//
+//
+// 
+// ONLY THE NEXT LINE SHOULD BE EDITED
+
+// BEGINNING OF EDIT
+
 let sport_key = upcoming
+
+// END OF EDIT
+
+// DO NOT EDIT AFTER THIS LINE
+//
+//
+//
+//
+//
+// 
+//
+// NO CHANGES BELOW
 
 const maxTotalOdds = 1.7
 const maxDifferenceOdds = 1
@@ -208,7 +231,8 @@ function runTotals(){
     .finally(function print() {
         console.log("Started Totals Calculation")
         // Test function
-        //console.log(obj[2].sites[0].odds.totals) 
+        //console.log(obj[9]) 
+        // console.log(obj[9].sites[0].odds.totals) 
         // console.log(obj[2].sites[1].odds.totals.points) 
         // console.log(obj[2].sites[2].odds.totals.points) 
         // console.log(obj[2].sites[3].odds.totals.points) 
@@ -233,6 +257,7 @@ function runTotals(){
                 for (j in betSites) {
                     //console.log("Checking all betting sites")
                     if (betSites[j].site_nice == "Pinnacle") {
+                        console.log("Found Pinnacle odds for "+totalGame+" with Total Odds: "+betSites[j].odds.totals.odds[1])
                         pinnacleExistTotals = true
                         //console.log("Found Pinnacle")
                         if (betSites[j].odds.totals.points[1]==2.5 && betSites[j].odds.totals.position[1]=="under" 
