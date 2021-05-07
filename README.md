@@ -1,1 +1,1 @@
-# bettingVisualizer
+# oddCalculator
